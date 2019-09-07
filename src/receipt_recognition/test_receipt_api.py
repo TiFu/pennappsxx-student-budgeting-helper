@@ -11,7 +11,7 @@ if __name__ == "__main__":
             config = json.load(json_file)
             postProcessors = [LineMergerPostprocessor(), ItemPostprocessor(), LanguageModelPostprocessor(knownWords)]
             api = ReceiptRecognitionApi(config, postProcessors, ReceiptTextVisualizer())
-            result = api.recognize("/home/mohammad/Downloads/2.png")
+            result = api.recognize("/home/mohammad/Downloads/photo5449598361255652721.jpg")
 
             pp = pprint.PrettyPrinter(indent=4)
             pp.pprint(result)
