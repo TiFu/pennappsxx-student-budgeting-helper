@@ -4,7 +4,6 @@ import io
 import json
 import pprint
 import cv2
-import math
 
 class ReceiptRecognitionApi:
 
@@ -36,8 +35,9 @@ class ReceiptTextVisualizer:
         return (int(point[0] * imageSize[0]), int(point[1] * imageSize[1]))
     
     def visualize(self, image, text):
-        image=cv2.imread(image)
-        imgWidth, imgHeight, _ = image.shape
+        image=Image.open(image)
+        draw = ImageDraw.Draw(image)  
+        imgWidth, imgHeight = image.size
         
         for entry in text:
             if entry["Type"] != "LINE":
@@ -56,27 +56,26 @@ class ReceiptTextVisualizer:
             print('Face Height: ' + "{0:.0f}".format(height))
 
             points = (
-                (int(left),int(top)),
+                (left,top),
                 (left + width, top),
-                (math.ceil(left + width), math.ceil(top + height)),
+                (left + width, top + height),
                 (left , top + height),
                 (left, top)
 
             )
-            middle = (left + 0.5 * width,top + 0.5 * height)
-            color = (255, 0 ,0)
-            cv2.rectangle(image, points[0], points[2], color, 1)
+            draw.line(points, fill='#00d400', width=1)
             #leftTop = (entry["Geometry"]["BoundingBox"]["Left"], entry["Geometry"]["BoundingBox"]["Top"])
             #rightBottom = (entry["Geometry"]["BoundingBox"]["Left"] + entry["Geometry"]["BoundingBox"]["Width"], entry["Geometry"]["BoundingBox"]["Height"] + entry["Geometry"]["BoundingBox"]["Top"])
+            #color = (255, 0 ,0)
             #leftTop = self._scaleEntry(leftTop, img.shape)
             #rightBottom = self._scaleEntry(rightBottom, img.shape)
             #print(leftTop)
             #print(rightBottom)
             #cv2.rectangle(img, (int(left), int(top)), (int(left + width), int(top + height)), color, 2)
             #break
-        
-        cv2.imshow("Receipt Text", image)
-        cv2.waitKey(0)
+        image.show()
+        #cv2.imshow("Receipt Text", img)
+        #cv2.waitKey(0)
 
 
 if __name__ == "__main__":
