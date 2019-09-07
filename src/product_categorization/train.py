@@ -25,14 +25,22 @@ with open('./products.csv', 'r') as csvfile:
         words = name.split(" ")
         sentenceArray = []
         for word in words:
-            if word not in vocab_mapping:
-                vocab_mapping[word] = vocab_count
-                vocab_count += 1
-            sentenceArray.append(vocab_mapping[word])
+            word = word.replace(",", "")
+            word = word.replace("'", "")
+            word = word.split("/")
+            for subword in word:
+                if subword not in vocab_mapping:
+                    vocab_mapping[subword] = vocab_count
+                    vocab_count += 1
+                sentenceArray.append(vocab_mapping[subword])
         src_data.append(torch.LongTensor(sentenceArray))
         department = int(row[3]) - 1
         tgt_data.append(torch.LongTensor([department]))
 
+import json
+with open('./vocab_mapping.json', 'w') as fp:
+    json.dump(vocab_mapping, fp)
+#print(vocab_mapping)
 print("Loaded dataset.")
 
 model = ProductCategorizer(vocab_count, cats)
