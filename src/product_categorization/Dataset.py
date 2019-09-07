@@ -19,9 +19,9 @@ class Batch(object):
         self.tensors['src_mask'] = self.tensors['source'].ne(PAD)
         self.tensors['src_length'] = torch.LongTensor(self.src_lengths)
 
-        self.tensors['target_input'] = torch.LongTensor(tgt_data)
         if tgt_data is not None:
             self.has_target = True
+            self.tensors['target_input'] = torch.LongTensor(tgt_data)
 
         self.size = len(src_data)
         self.src_size = sum([len(x)     for x in src_data])

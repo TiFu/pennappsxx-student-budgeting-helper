@@ -27,6 +27,11 @@ with open('./products.csv', 'r') as csvfile:
         for word in words:
             word = word.replace(",", "")
             word = word.replace("'", "")
+            word = word.replace("\\", "")
+            word = word.replace("\"", "")
+            word = word.replace("®", "")
+            word = word.replace("\xa0", "")
+            word = word.lower()
             word = word.split("/")
             for subword in word:
                 if subword not in vocab_mapping:
@@ -34,11 +39,13 @@ with open('./products.csv', 'r') as csvfile:
                     vocab_count += 1
                 sentenceArray.append(vocab_mapping[subword])
         src_data.append(torch.LongTensor(sentenceArray))
+        #print("Row is: " + str(row))
         department = int(row[3]) - 1
         tgt_data.append(torch.LongTensor([department]))
 
 import json
 with open('./vocab_mapping.json', 'w') as fp:
+    print("Vocab Mapping Size: " + str(len(vocab_mapping)))
     json.dump(vocab_mapping, fp)
 #print(vocab_mapping)
 print("Loaded dataset.")
@@ -55,7 +62,7 @@ data = Dataset(src_data, tgt_data, 20 * 1000, batch_size_sents=1000)
 
 data.create_order()
 
-for epoch in range(100000):
+for epoch in range(4001):
         # Definition of inputs as variables for the net.
         # requires_grad is set False because we do not need to compute the 
         # derivative of the inputs.
