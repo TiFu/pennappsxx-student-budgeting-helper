@@ -4,7 +4,6 @@ import io
 import re
 import json
 import pprint
-import cv2
 import Levenshtein
 
 class ReceiptRecognitionApi:
@@ -22,22 +21,22 @@ class ReceiptRecognitionApi:
         image_binary = stream.getvalue()
 
 
-        with open('./cache.json') as json_file:
-            #response = json.load(json_file)
-            response = self.client.detect_text(Image={'Bytes':image_binary})        
-            pp = pprint.PrettyPrinter(indent=4)
-            pp.pprint(response)
+        #with open('./cache.json') as json_file:
+        #response = json.load(json_file)
+        response = self.client.detect_text(Image={'Bytes':image_binary})        
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(response)
 
-            # Postprocessing
-            detections = response["TextDetections"]
-            output = {}
-            for postProcessor in self.postProcessors:
-                detections = postProcessor.process(inputImagePath, detections, output)
-                processorOutput = postProcessor.getOutput()
-                if processorOutput is not None:
-                    output.update(postProcessor.getOutput())
-                    print("Output: " + str(postProcessor.getOutput()))
-            self.receiptVisualizer.visualize(inputImagePath, detections)
-            print("FINAL OUTPUT: ")
-            print(output)
+        # Postprocessing
+        detections = response["TextDetections"]
+        output = {}
+        for postProcessor in self.postProcessors:
+            detections = postProcessor.process(inputImagePath, detections, output)
+            processorOutput = postProcessor.getOutput()
+            if processorOutput is not None:
+                output.update(postProcessor.getOutput())
+                print("Output: " + str(postProcessor.getOutput()))
+        self.receiptVisualizer.visualize(inputImagePath, detections)
+        print("FINAL OUTPUT: ")
+        print(output)
         return output
