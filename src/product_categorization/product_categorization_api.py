@@ -13,7 +13,9 @@ class ProductCategorizationApi:
         self.model = ProductCategorizer(len(self.vocacbMapping) + 1, 21)
         self.model.load_state_dict(torch.load(modelPath))
 
-    def predictCategory(self, productNames):
+    def predictCategory(self, items):
+        productNames = list(map(lambda x: x["name"], items))
+
         dataSet = self._mapStringToIndices(productNames)
         indices = [i for i, val in enumerate(dataSet) if val is None]
         dataSet = list(filter(lambda x: x is not None, dataSet))
@@ -29,7 +31,12 @@ class ProductCategorizationApi:
         max_index = pred.max(dim = 1)[1]
         
         categories = self._mapMaxIndexToCategoryName(max_index)
-        return self._fillWithUnknownCats(categories, indices)
+        categories = self._fillWithUnknownCats(categories, indices)
+        i = 0
+        while i < len(items):
+            items[i]["category"] = categories[i]
+            i += 1
+        return items
 
     def _fillWithUnknownCats(self, categories, indices):
         output = []
