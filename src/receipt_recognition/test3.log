@@ -1079,89 +1079,88 @@
                               'Id': 63,
                               'ParentId': 16,
                               'Type': 'WORD'}]}
-Image Size:415, 396
 Entry: TRADER
-Left: 115
-Top: 128
-Face Width: 141
-Face Height: 26
-Entry: JOE'S
-Left: 264
-Top: 131
-Face Width: 103
-Face Height: 26
-Entry: 6343
-Left: 147
-Top: 166
-Face Width: 34
-Face Height: 14
-Entry: Penn Avenue
-Left: 185
-Top: 168
-Face Width: 86
-Face Height: 16
-Entry: Pittsburgh PA 15206
-Left: 126
-Top: 178
-Face Width: 160
-Face Height: 18
-Entry: Store #638 (412) 363-5748
-Left: 101
-Top: 194
-Face Width: 207
-Face Height: 18
-Entry: GPEN 8:00AM 10 9:00PM DAILY
-Left: 100
-Top: 227
-Face Width: 207
-Face Height: 17
-Entry: SLICED WHITE BREAD 1.19
-Left: 47
-Top: 263
-Face Width: 283
-Face Height: 16
-Entry: GNICHI ALLA SORRENTINA
-Left: 48
-Top: 281
-Face Width: 175
-Face Height: 14
-Entry: LININE WITH PESTO 8 TOMATOES 2.99
-Left: 48
-Top: 295
-Face Width: 282
+Left: 109
+Top: 135
+Face Width: 135
 Face Height: 27
-Entry: GNCHT AL GORGONZOLA 2.99
-Left: 45
-Top: 313
-Face Width: 284
-Face Height: 23
-Entry: 6.58
-Left: 297
-Top: 316
+Entry: JOE'S
+Left: 252
+Top: 137
+Face Width: 98
+Face Height: 27
+Entry: 6343
+Left: 140
+Top: 174
 Face Width: 32
-Face Height: 13
-Entry: 207
-Left: 63
-Top: 328
-Face Width: 23
-Face Height: 13
-Entry: 3.29/0Z
-Left: 131
-Top: 330
-Face Width: 54
-Face Height: 14
-Entry: GNOOHI ALLA SORRENTINA 2.99
-Left: 46
-Top: 342
-Face Width: 281
-Face Height: 16
-Entry: BANAVA EACH ORG 1.75
-Left: 46
-Top: 359
-Face Width: 281
 Face Height: 15
-Entry: 7A 00.25/EA
-Left: 64
+Entry: Penn Avenue
+Left: 177
+Top: 176
+Face Width: 82
+Face Height: 17
+Entry: Pittsburgh PA 15206
+Left: 120
+Top: 186
+Face Width: 153
+Face Height: 19
+Entry: Store #638 (412) 363-5748
+Left: 96
+Top: 203
+Face Width: 198
+Face Height: 19
+Entry: GPEN 8:00AM 10 9:00PM DAILY
+Left: 95
+Top: 238
+Face Width: 198
+Face Height: 18
+Entry: SLICED WHITE BREAD 1.19
+Left: 45
+Top: 275
+Face Width: 270
+Face Height: 17
+Entry: GNICHI ALLA SORRENTINA
+Left: 46
+Top: 294
+Face Width: 167
+Face Height: 15
+Entry: LININE WITH PESTO 8 TOMATOES 2.99
+Left: 46
+Top: 309
+Face Width: 269
+Face Height: 28
+Entry: GNCHT AL GORGONZOLA 2.99
+Left: 43
+Top: 328
+Face Width: 271
+Face Height: 24
+Entry: 6.58
+Left: 283
+Top: 331
+Face Width: 31
+Face Height: 14
+Entry: 207
+Left: 60
+Top: 344
+Face Width: 22
+Face Height: 14
+Entry: 3.29/0Z
+Left: 125
+Top: 346
+Face Width: 52
+Face Height: 15
+Entry: GNOOHI ALLA SORRENTINA 2.99
+Left: 44
+Top: 359
+Face Width: 268
+Face Height: 17
+Entry: BANAVA EACH ORG 1.75
+Left: 44
 Top: 376
-Face Width: 122
+Face Width: 268
+Face Height: 16
+Entry: 7A 00.25/EA
+Left: 61
+Top: 394
+Face Width: 117
 Face Height: 15

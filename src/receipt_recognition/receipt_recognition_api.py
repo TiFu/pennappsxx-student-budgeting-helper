@@ -38,7 +38,7 @@ class ReceiptTextVisualizer:
         image=Image.open(image)
         draw = ImageDraw.Draw(image)  
         imgWidth, imgHeight = image.size
-        
+        print("Image Size:" + str(imgWidth) + ", " + str(imgHeight))
         for entry in text:
             if entry["Type"] != "LINE":
                 continue
