@@ -76,7 +76,6 @@ def send_message(text, chat_id):
 
 def get_last_chat_id_and_photo(updates):
 	num_updates = len(updates["result"])
-	print(num_updates)
 	last_update = num_updates - 1
 	
 	chat_id = updates["result"][last_update]["message"]["chat"]["id"]
