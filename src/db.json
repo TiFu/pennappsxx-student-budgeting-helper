@@ -10,15 +10,14 @@
         "transactionSum": {
             "92019": {
                 "frozen": 10.0,
+                "produce": 14.799999999999999,
                 "null": 1.29,
-                "pantry": 30.8,
-                "produce": 71.42,
-                "snacks": 12.450000000000001,
-                "household": 10.49,
-                "beverages": 13.45,
-                "canned goods": 18.95,
-                "dry goods pasta": 4.25,
-                "null": 3.87
+                "pantry": 6.16,
+                "snacks": 2.49,
+                "household": 1.84,
+                "beverages": 2.69,
+                "canned goods": 3.79,
+                "dry goods pasta": 0.85
             }
         },
         "lastAskedItem": 3

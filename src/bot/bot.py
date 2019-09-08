@@ -16,6 +16,11 @@ class Bot:
         self._registerCommands()
         self.userStateMachines = {}
         self.categories = [ "frozen", "produce", "dairy"]
+        self.displayNames = {
+            "frozen": "Frozen Goods",
+            "produce": "Fruits & Vegetables",
+            "dairy": "Dairy"
+        }
 
     def _registerCommands(self):
         print("Registering command")
@@ -28,13 +33,13 @@ class Bot:
 
     def _start(self, update, context):
         #context.bot.send_message(chat_id=update.message.chat_id, text="Hi! Welcome to our budgeting helper bot. We will first need to set up some basic data.")
-        self.userStateMachines[update.message.chat_id] = setUpStateMachine(self.config, self.categories, self.database)
+        self.userStateMachines[update.message.chat_id] = setUpStateMachine(self.config, self.categories, self.database, self.displayNames)
         self.userStateMachines[update.message.chat_id].begin(update, context)
 
     def _onMessage(self, update, context):
         print("Processing on message callback")
         if update.message.chat.id not in self.userStateMachines:
-            self.userStateMachines[update.message.chat.id] = setUpStateMachine(self.config, self.categories, self.database)
+            self.userStateMachines[update.message.chat.id] = setUpStateMachine(self.config, self.categories, self.database, self.displayNames)
             self.userStateMachines[update.message.chat.id].begin(update, context)
 
         self.userStateMachines[update.message.chat_id].process(update, context)

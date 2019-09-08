@@ -5,11 +5,11 @@ from receipt_recognition.receipt_visualizer import ReceiptTextVisualizer
 import re 
 import json
 
-def setUpStateMachine(config, productCategories, database):
+def setUpStateMachine(config, productCategories, database, displayNames):
     idleState = IdleState(None, None)
-    createBudgetState = CreateBudgetState(idleState, database, productCategories)
+    createBudgetState = CreateBudgetState(idleState, database, productCategories, displayNames)
     initialState = StartState(createBudgetState)
-    checkBudgetState = BudgetCheckState(idleState, database)
+    checkBudgetState = BudgetCheckState(idleState, database, displayNames)
 
     api = ProductCategorizationApi("./product_categorization/model_e4000.pt", "./product_categorization/vocab_mapping.json", "./product_categorization/categories.json")        
     textTransactionState = TextTransactionState(checkBudgetState, idleState, database, api)
@@ -194,10 +194,11 @@ class StartState(State):
 
 class CreateBudgetState(State):
 
-    def __init__(self, idleState, database, categories):
+    def __init__(self, idleState, database, categories, categoriesDisplayNames):
         self.idleState = idleState
         self.database = database
         self.categories = categories
+        self.categoriesDisplayNames = categoriesDisplayNames
         self.dollarPattern = re.compile("[1-9][0-9]*(\.[0-9][0-9])?")
 
     def enter(self, message, context):
@@ -214,7 +215,7 @@ class CreateBudgetState(State):
             return self.idleState
         else:
             if not message.message.text:
-                context.bot.send_message(chat_id=message.message.chat_id, text="Sorry that didn't work. How much do you want to budget for " + lastAskedCat  + "?")
+                context.bot.send_message(chat_id=message.message.chat_id, text="Sorry that didn't work. How much do you want to budget for " + (self.categoriesDisplayNames[lastAskedCat] if lastAskedCat in self.categoriesDisplayNames else lastAskedCat)  + "?")
                 return self
 
             # Process message
@@ -228,7 +229,7 @@ class CreateBudgetState(State):
                 if not self._askNextCategory(message, context):
                     return self.idleState
             else:
-                context.bot.send_message(chat_id=message.message.chat_id, text="Sorry that didn't work. How much do you want to budget for " + lastAskedCat  + "?")
+                context.bot.send_message(chat_id=message.message.chat_id, text="Sorry that didn't work. How much do you want to budget for " +  (self.categoriesDisplayNames[lastAskedCat] if lastAskedCat in self.categoriesDisplayNames else lastAskedCat)  + "?")
 
             return self
 
@@ -241,7 +242,7 @@ class CreateBudgetState(State):
         self.database.setLastAskedBudgetCategory(chatId, possibleCats[0])
         self.database.persist()
 
-        context.bot.send_message(chat_id=update.message.chat_id, text="How much do you want to spend monthly on " + str(possibleCats[0]) + "?")
+        context.bot.send_message(chat_id=update.message.chat_id, text="How much do you want to spend monthly on " + (self.categoriesDisplayNames[possibleCats[0]] if possibleCats[0] in self.categoriesDisplayNames else possibleCats[0]) + "?")
         return True
 
     def leave(self, message, context):
@@ -276,9 +277,10 @@ class TextTransactionState(State):
 
 class BudgetCheckState(State):
 
-    def __init__(self, idleState, database):
+    def __init__(self, idleState, database, displayNames):
         self.idleState = idleState
         self.database = database
+        self.displayNames = displayNames
 
     def enter(self, update, context):
         chatId = update.message.chat.id
@@ -301,10 +303,10 @@ class BudgetCheckState(State):
                 fractionUsed = transactionSum[key] / budgets[key]
                 diff = transactionSum[key] - budgets[key]
                 if fractionUsed > 1.0:
-                    resultStr += "You have exceeded your monthly budget for " + str(key) + ". You spent $" + str("{:.2f}".format(transactionSum[key])) + ", $" + str("{:.2f}".format(abs(diff))) + " more than your budget of $" + str(budgets[key])
+                    resultStr += "You have exceeded your monthly budget for " +  (self.displayNames[key] if key in self.displayNames else key) + ". You spent $" + str("{:.2f}".format(transactionSum[key])) + ", $" + str("{:.2f}".format(abs(diff))) + " more than your budget of $" + str(budgets[key])
                     resultStr += "\n"
                 elif fractionUsed > 0.8:
-                    resultStr += "You spent " + str(int(fractionUsed * 100)) + "% of your monthly budget for " + str(key) + ". , $" + str("{:.2f}".format(abs(diff))) + " of $" + str("{:.2f}".format(budgets[key])) + " remaining."
+                    resultStr += "You spent " + str(int(fractionUsed * 100)) + "% of your monthly budget for " + (self.displayNames[key] if key in self.displayNames else key) + ". , $" + str("{:.2f}".format(abs(diff))) + " of $" + str("{:.2f}".format(budgets[key])) + " remaining."
                     resultStr += "\n"
         if resultStr != "":
             context.bot.send_message(chat_id=update.message.chat_id, text=resultStr)
