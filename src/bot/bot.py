@@ -8,8 +8,9 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                      level=logging.INFO)
 class Bot:
 
-    def __init__(self, botToken, database):
+    def __init__(self, config, botToken, database):
         print("Using bot token " + str(botToken))
+        self.config = config
         self.updater = Updater(token=botToken, use_context=True)
         self.database = database
         self._registerCommands()
@@ -27,13 +28,13 @@ class Bot:
 
     def _start(self, update, context):
         #context.bot.send_message(chat_id=update.message.chat_id, text="Hi! Welcome to our budgeting helper bot. We will first need to set up some basic data.")
-        self.userStateMachines[update.message.chat_id] = setUpStateMachine(self.categories, self.database)
+        self.userStateMachines[update.message.chat_id] = setUpStateMachine(self.config, self.categories, self.database)
         self.userStateMachines[update.message.chat_id].begin(update, context)
 
     def _onMessage(self, update, context):
         print("Processing on message callback")
         if update.message.chat.id not in self.userStateMachines:
-            self.userStateMachines[update.message.chat.id] = setUpStateMachine(self.categories, self.database)
+            self.userStateMachines[update.message.chat.id] = setUpStateMachine(self.config, self.categories, self.database)
             self.userStateMachines[update.message.chat.id].begin(update, context)
 
         self.userStateMachines[update.message.chat_id].process(update, context)

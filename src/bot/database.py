@@ -1,6 +1,6 @@
 import json
 import os 
-import datetime
+from datetime import datetime
 
 # USAGE
 # a) update database by accessing db.database
@@ -63,7 +63,6 @@ class Database:
         return chat["budgets"]
 
 
-
     def updateBudget(self, chatId, categoryName, value):
         chat = self._getChatDB(chatId)
         if "budgets" not in chat:
@@ -71,13 +70,31 @@ class Database:
         chat["budgets"][categoryName] = value
         print("Updated category budget" + str(self.database))
 
+    def setItem(self, chatId, idx, dollarValue):
+       chat = self._getChatDB(chatId)
+       chat["currentReceiptItems"][idx]["dollar"] = dollarValue # if "currentReceiptItems" in chat else []
+
+
+    def getLastAskedItem(self, chatId):
+        chat = self._getChatDB(chatId)
+        return chat["lastAskedItem"] if "lastAskedItem" in chat else None
+
+    def setLastAskedItem(self, chatId, index):
+       chat = self._getChatDB(chatId)
+       chat["lastAskedItem"] = index
+
+    def getCurrentitems(self, chatId):
+       chat = self._getChatDB(chatId)
+       return chat["currentReceiptItems"] if "currentReceiptItems" in chat else []
+
     def setCurrentitems(self, chatId, input):
        chat = self._getChatDB(chatId)
        chat["currentReceiptItems"] = input
 
     def clearCurrentReceipt(self, chatId):
         chat = self._getChatDB(chatId)
-        del chat["currentReceiptItems"]
+        if "currentReceiptItems" in chat:
+            del chat["currentReceiptItems"]
 
     def getCurrentTransactionSum(self, chatId):
         chat = self._getChatDB(chatId)

@@ -39,12 +39,13 @@ class ProductCategorizationApi:
         return items
 
     def _fillWithUnknownCats(self, categories, indices):
+        print("Categories: " + str(categories) + "/" + str(indices))
         output = []
         i = 0
         categoryPointer = 0
         indexPointer = 0
         while i < len(categories) + len(indices):
-            if i < len(indices) and i == indices[indexPointer]:
+            if indexPointer < len(indices) and i == indices[indexPointer]:
                 output.append(None)
                 indexPointer += 1
             else:

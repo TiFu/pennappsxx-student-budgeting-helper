@@ -1,0 +1,24 @@
+{
+    "350248176": {
+        "lastAskedBudgetCategory": null,
+        "currentState": "IdleState",
+        "budgets": {
+            "frozen": 30.0,
+            "produce": 30.0,
+            "dairy": 30.0
+        },
+        "lastAskedItem": 3,
+        "transactionSum": {
+            "92019": {
+                "produce": 14.799999999999999,
+                "null": 1.29,
+                "pantry": 6.16,
+                "snacks": 2.49,
+                "household": 1.84,
+                "beverages": 2.69,
+                "canned goods": 3.79,
+                "dry goods pasta": 0.85
+            }
+        }
+    }
+}
