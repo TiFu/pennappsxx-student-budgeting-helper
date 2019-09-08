@@ -1,4 +1,4 @@
-# Student Budget Helper
+# Student Budgeting Helper
 Link on DevPost: https://devpost.com/software/receiptscannerbot
 
 ## Inspiration
