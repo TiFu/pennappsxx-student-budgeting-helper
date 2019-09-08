@@ -57,8 +57,9 @@ def get_last_update_id(updates):
 
 def echo_all(updates):
 	for update in updates["result"]:
-		#if ("document" not in update["message"].keys()):
-		#	break
+		if ("document" not in update["message"].keys()):
+			break
+
 		fid = update["message"]["document"]["file_id"]
 		chat = update["message"]["chat"]["id"]
 		#url = URL + "getfile?file_id=" + fid
