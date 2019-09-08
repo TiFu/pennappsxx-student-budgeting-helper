@@ -1,5 +1,6 @@
 import json
 import os 
+import datetime
 
 # USAGE
 # a) update database by accessing db.database
@@ -55,6 +56,14 @@ class Database:
             chat["lastAskedBudgetCategory"] = None
         return chat["lastAskedBudgetCategory"]
 
+    def getBudget(self, chatId):
+        chat = self._getChatDB(chatId)
+        if "budgets" not in chat:
+            return None
+        return chat["budgets"]
+
+
+
     def updateBudget(self, chatId, categoryName, value):
         chat = self._getChatDB(chatId)
         if "budgets" not in chat:
@@ -62,6 +71,40 @@ class Database:
         chat["budgets"][categoryName] = value
         print("Updated category budget" + str(self.database))
 
+
+    def clearCurrentReceipt(self, chatId):
+        chat = self._getChatDB(chatId)
+        del chat["currentReceiptItems"]
+
+    def getCurrentTransactionSum(self, chatId):
+        chat = self._getChatDB(chatId)
+        today = datetime.today()
+        key = str(today.month) + str(today.year)
+        if "transactionSum" not in chat:
+            return None
+
+        today = datetime.today()
+        key = str(today.month) + str(today.year)
+        if key not in chat["transactionSum"]:
+            return None
+        return chat["transactionSum"][key]
+
+        
+    def updateTransactionSum(self, chatId, items):
+        chat = self._getChatDB(chatId)
+        if "transactionSum" not in chat:
+            chat["transactionSum"] = {}
+
+        today = datetime.today()
+        key = str(today.month) + str(today.year)
+        if key not in chat["transactionSum"]:
+            chat["transactionSum"][key] = {}
+        
+        for item in items:
+            cat = item["category"]
+            if cat not in chat["transactionSum"][key]:
+                chat["transactionSum"][key][cat] = 0
+            chat["transactionSum"][key][cat] += item["dollar"]
 
     def _getChatDB(self, chatId):
         if str(chatId) not in self.database:

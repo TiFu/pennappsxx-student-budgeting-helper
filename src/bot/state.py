@@ -5,6 +5,7 @@ def setUpStateMachine(productCategories, database):
     createBudgetState = CreateBudgetState(idleState, database, productCategories)
     initialState = StartState(createBudgetState)
 
+
     nameToStateMap = {
     }
     nameToStateMap[type(initialState).__name__] = initialState
@@ -51,7 +52,7 @@ class State:
     def transition(self, message, context):
         return self
 
-class idleState(State):
+class IdleState(State):
     def enter(self, message, context):
         return self
 
@@ -121,3 +122,51 @@ class CreateBudgetState(State):
 
         context.bot.send_message(chat_id=update.message.chat_id, text="How much do you want to spend monthly on " + str(possibleCats[0]) + "?")
         return True
+
+
+class BudgetCheckState(State):
+
+    def __init__(self, idleState, database):
+        self.idleState = idleState
+        self.database = database
+
+    def enter(self, update, context):
+        chatId = update.message.chat.id
+        currentReceipt = self.database.getCurrentReceipt(chatId)
+        self.database.updateTransactionSum(chatId, currentReceipt)
+        self.database.clearCurrentReceipt(chatId)
+        self.database.persist()
+
+        # Check for critical budgets
+
+        transactionSum = self.database.getCurrentTransactionSum(chatId)
+        budgets = self.database.getBudgets(chatId)
+
+        if transactionSum is not None and budgets is not None:
+            resultStr = ""
+            for key in budgets:
+                if not key in transactionSum:
+                    continue
+
+                fractionUsed = transactionSum[key] / budgets[key]
+                diff = transactionSum[key] - budgets[key]
+                if fractionUsed > 1.0:
+                    resultStr += "You have exceeded your monthly budget for " + str(key) + ". You spent **$" + str(transactionSum[key]) + "**, $" + str(diff) + " more than your budget of $" + str(budgets[key])
+                    resultStr += "\n"
+                if fractionUsed > 0.8:
+                    resultStr += "You have consumed " + int(fractionUsed) + "\% of your monthly budget for " + str(key) + ". **, $" + str(diff) + "** of $" + str(budgets[key]) + " remaining."
+                    resultStr += "\n"
+        if resultStr != "":
+            context.bot.send_message(chat_id=update.message.chat_id, text=resultStr)
+            
+        return self.idleState
+
+            
+
+
+    def transition(self, update, context):
+        pass
+
+    def leave(self, update, context):
+        pass
+
