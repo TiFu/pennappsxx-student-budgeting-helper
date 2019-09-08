@@ -1,7 +1,7 @@
-from model import ProductCategorizer
+from .model import ProductCategorizer
 import torch
 import json
-from Dataset import Dataset
+from .Dataset import Dataset
 
 class ProductCategorizationApi:
     

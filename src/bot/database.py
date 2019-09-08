@@ -71,6 +71,9 @@ class Database:
         chat["budgets"][categoryName] = value
         print("Updated category budget" + str(self.database))
 
+    def setCurrentitems(self, chatId, input):
+       chat = self._getChatDB(chatId)
+       chat["currentReceiptItems"] = input
 
     def clearCurrentReceipt(self, chatId):
         chat = self._getChatDB(chatId)

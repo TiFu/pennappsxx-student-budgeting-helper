@@ -1,16 +1,23 @@
+from product_categorization.product_categorization_api import ProductCategorizationApi
 import re 
 
 def setUpStateMachine(productCategories, database):
     idleState = IdleState()
     createBudgetState = CreateBudgetState(idleState, database, productCategories)
     initialState = StartState(createBudgetState)
+    checkBudgetState = BudgetCheckState(idleState, database)
+    textTransactionState = TextTransactionState(checkBudgetState, database)
 
+    idleState.textTransactionState = idleState
 
     nameToStateMap = {
     }
     nameToStateMap[type(initialState).__name__] = initialState
     nameToStateMap[type(createBudgetState).__name__] = createBudgetState
     nameToStateMap[type(idleState).__name__] = idleState
+    nameToStateMap[type(checkBudgetState).__name__] = checkBudgetState
+    nameToStateMap[type(textTransactionState).__name__] = textTransactionState
+
     print("name to state map" + str(nameToStateMap))
     return StateMachine(nameToStateMap, database)
 
@@ -53,6 +60,9 @@ class State:
         return self
 
 class IdleState(State):
+    def __init__(self, textTransactionState):
+        self.textTransactionState = textTransactionState
+        
     def enter(self, message, context):
         return self
 
@@ -60,6 +70,9 @@ class IdleState(State):
         pass
 
     def transition(self, message, context):
+        if message.message.text:
+            return self.textTransactionState
+
         return self
 
 class StartState(State):
@@ -96,6 +109,10 @@ class CreateBudgetState(State):
         if self.database.getBudgetCount(chatId) == len(self.categories):
             return self.idleState
         else:
+            if not selfmessage.message.text:
+                context.bot.send_message(chat_id=message.message.chat_id, text="Sorry that didn't work. How much do you want to budget for " + lastAskedCat  + "?")
+                return self
+
             # Process message
             match = self.dollarPattern.search(message.message.text)
         
@@ -122,6 +139,30 @@ class CreateBudgetState(State):
 
         context.bot.send_message(chat_id=update.message.chat_id, text="How much do you want to spend monthly on " + str(possibleCats[0]) + "?")
         return True
+
+    def leave(self, message, context):
+        context.bot.send_message(chat_id=update.message.chat_id, text="Thank your for setting up a budget. You can now upload pictures of receipts and/or register expenses using a simple text message. I will keep track of your expenses and notify you if you exhaust your budget.")
+
+class TextTransactionState(State):
+    def __init__(self, budgetCheckState, database):
+        self.budgetCheckState = budgetCheckState
+        self.database = database
+
+    def transition(self, message, context):
+        chatId = message.message.chat.id
+        a = message.message.text.split("bought")
+        b = a[1].split("for")
+        message.message.text.replace("a", "", 1)
+        message.message.text.replace("n", "", 1)        
+        item = b[0]
+        price = float(b[1].replace(".", "").replace("$", ""))       
+        api = ProductCategorizationApi("./model_e4000.pt", "./vocab_mapping.json", "./categories.json")        
+        input = [{"name":item, "dollar": price}]
+        results = api.predictCategory(input)        
+        self.database.setCurrentitems(self, chatId, results)        
+        self.database.persist()
+        context.bot.send_message(chat_id=update.message.chat_id, text="Your item has succesfully been added")
+        return self.budgetCheckState
 
 
 class BudgetCheckState(State):
