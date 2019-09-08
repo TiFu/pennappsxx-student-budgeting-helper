@@ -1,7 +1,7 @@
 import re 
 
 def setUpStateMachine(productCategories, database):
-    idleState = State()
+    idleState = IdleState()
     createBudgetState = CreateBudgetState(idleState, database, productCategories)
     initialState = StartState(createBudgetState)
 
@@ -46,7 +46,17 @@ class State:
         return self
 
     def leave(self, message, context):
+        pass
+
+    def transition(self, message, context):
         return self
+
+class idleState(State):
+    def enter(self, message, context):
+        return self
+
+    def leave(self, message, context):
+        pass
 
     def transition(self, message, context):
         return self
