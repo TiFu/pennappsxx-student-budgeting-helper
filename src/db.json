@@ -3,22 +3,24 @@
         "lastAskedBudgetCategory": null,
         "currentState": "IdleState",
         "budgets": {
-            "frozen": 30.0,
-            "produce": 30.0,
-            "dairy": 30.0
+            "frozen": 2.0,
+            "produce": 15.0,
+            "dairy": 4.0
         },
-        "lastAskedItem": 3,
         "transactionSum": {
             "92019": {
-                "produce": 14.799999999999999,
+                "frozen": 10.0,
                 "null": 1.29,
-                "pantry": 6.16,
-                "snacks": 2.49,
-                "household": 1.84,
-                "beverages": 2.69,
-                "canned goods": 3.79,
-                "dry goods pasta": 0.85
+                "pantry": 30.8,
+                "produce": 71.42,
+                "snacks": 12.450000000000001,
+                "household": 10.49,
+                "beverages": 13.45,
+                "canned goods": 18.95,
+                "dry goods pasta": 4.25,
+                "null": 3.87
             }
-        }
+        },
+        "lastAskedItem": 3
     }
 }

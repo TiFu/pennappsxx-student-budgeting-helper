@@ -134,12 +134,29 @@ class RecogReceiptState(State):
         self.database.setCurrentitems(message.message.chat.id, items)
         self.database.persist()
 
+        # Print item list
+        itemList = ""
+        returnCorrectState = False
+        i = 1
+        total = 0.0
+        missing = 0
         for item in items:
             cost = item["dollar"]
             if cost is None:
-                return self.correctReceiptState
+                returnCorrectState = True
+                missing += 1
+            else:
+                total += cost
+            itemList += (" " if i < 10 else "") + str(i) + ") " + str(item["name"]) + " $" + str(cost if cost is not None else "-.--") + "\n"
+            i += 1
+        itemList += "------\n"
+        itemList += "$" + "{:.2f}".format(total) + " TOTAL, missing prices for " + str(missing) + " items."
+        context.bot.send_message(chat_id=message.message.chat_id, text=itemList)
 
-        return self.budgetCheckState
+        if returnCorrectState:
+            return self.correctReceiptState
+        else:
+            return self.budgetCheckState
 
     def transition(self, message, context):
         return self.enter(message, context)
@@ -284,10 +301,10 @@ class BudgetCheckState(State):
                 fractionUsed = transactionSum[key] / budgets[key]
                 diff = transactionSum[key] - budgets[key]
                 if fractionUsed > 1.0:
-                    resultStr += "You have exceeded your monthly budget for " + str(key) + ". You spent $" + str(transactionSum[key]) + ", $" + str(diff) + " more than your budget of $" + str(budgets[key])
+                    resultStr += "You have exceeded your monthly budget for " + str(key) + ". You spent $" + str("{:.2f}".format(transactionSum[key])) + ", $" + str("{:.2f}".format(abs(diff))) + " more than your budget of $" + str(budgets[key])
                     resultStr += "\n"
                 elif fractionUsed > 0.8:
-                    resultStr += "You have consumed " + str(int(fractionUsed * 100)) + "% of your monthly budget for " + str(key) + ". , $" + str(diff) + " of $" + str(budgets[key]) + " remaining."
+                    resultStr += "You spent " + str(int(fractionUsed * 100)) + "% of your monthly budget for " + str(key) + ". , $" + str("{:.2f}".format(abs(diff))) + " of $" + str("{:.2f}".format(budgets[key])) + " remaining."
                     resultStr += "\n"
         if resultStr != "":
             context.bot.send_message(chat_id=update.message.chat_id, text=resultStr)

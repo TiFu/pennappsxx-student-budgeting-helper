@@ -8,6 +8,8 @@ import pprint
 import Levenshtein
 import numpy as np
 import imutils
+import hashlib
+import os
 
 class ReceiptRecognitionApi:
 
@@ -128,6 +130,11 @@ class ReceiptRecognitionApi:
 
     def recognize(self, inputImagePath):
         inputImagePath = self.preprocessImage(inputImagePath)
+        hash = str(hashlib.md5(Image.open(inputImagePath).tobytes()).hexdigest())
+        if os.path.exists(hash + ".json"):
+            with open(hash + ".json", 'r', encoding='utf-8') as cached:
+                result = json.load(cached)
+                return result
 
         output = {}
         i = 0
@@ -178,4 +185,6 @@ class ReceiptRecognitionApi:
 
         print("FINAL OUTPUT: ")
         print(output)
+        with open(hash + ".json", 'w+') as outFile:
+            json.dump(output, outFile)
         return output
