@@ -8,6 +8,16 @@ class ItemPostprocessor(Postprocessor):
         self.dollarPattern = re.compile("[0-9]+\.[0-9][0-9]")
         self.lineThreshold = 5
         self.items = None
+        self.forbiddenStrings = [
+            "SUBTOTAL",
+            "TOTAL",
+            "A-Taxable",
+            "AMOUNT"
+        ]
+        self.maxWidth = None
+
+    def reset(self):
+        self.maxWidth = None
 
     def getOutput(self):
         return { "items": self.items }
@@ -32,7 +42,11 @@ class ItemPostprocessor(Postprocessor):
                 i += 1
             name = self._rreplace(item["DetectedText"], str(price), "", 1)
             name = self._rreplace(name, "$", "", 1)
-
+            name = name.strip()
+            name = re.sub(r'\d+$', "", name)
+            name = name.replace("FA", "")
+            name = name.strip()
+            print("Final name is: " + str(name))
             finalItem = self._getItem(name, price, descriptionLine)
             self.items.append(finalItem)
             i += 1
@@ -59,23 +73,32 @@ class ItemPostprocessor(Postprocessor):
             "description": descriptionLine.strip()
         }
 
+    def _containsForbiddenString(self, text):
+        for forbiddenString in self.forbiddenStrings:
+            if forbiddenString.lower() in text.lower():
+                return True
+
+        return False
+
     def _findPotentialItems(self, image, text):
         image=Image.open(image)
         imgWidth, imgHeight = image.size
 
         # TODO determine width based on having d.dd in it AND similar width
-        sizeMap = {}
-        maxWidth = None
-        for entry in text:
-            if not self.dollarPattern.search(entry["DetectedText"]):
-                continue
-            w = str(int(entry["Geometry"]["BoundingBox"]["Width"] * imgWidth))
-            sizeMap[w] = 1 if w not in sizeMap else (sizeMap[w] + 1)
-            if maxWidth is None or sizeMap[w] > sizeMap[maxWidth]:
-                maxWidth = w
-        print("Max width is : " + str(maxWidth))
-        maxWidth = float(maxWidth)
-
+        if self.maxWidth is None:
+            sizeMap = {}
+            maxWidth = None
+            for entry in text:
+                if not self.dollarPattern.search(entry["DetectedText"]):
+                    continue
+                w = str(int(entry["Geometry"]["BoundingBox"]["Width"] * imgWidth))
+                sizeMap[w] = 1 if w not in sizeMap else (sizeMap[w] + 1)
+                if maxWidth is None or sizeMap[w] > sizeMap[maxWidth]:
+                    maxWidth = w
+            print("Max width is : " + str(maxWidth))
+            if maxWidth is None:
+                return []
+            self.maxWidth = float(maxWidth)
         # Also includes lines in between i.e. count numbers
         potentialItems = []
 
@@ -85,7 +108,7 @@ class ItemPostprocessor(Postprocessor):
         lastItemCounter = 0
         for entry in text:
             w = entry["Geometry"]["BoundingBox"]["Width"] * imgWidth
-            if abs(maxWidth - w) < self.lineThreshold:
+            if abs(self.maxWidth - w) < self.lineThreshold and not self._containsForbiddenString(entry["DetectedText"]):
                 print(entry["DetectedText"] + "is item!")
                 didItemsStart = True
                 entry["isItem"] = True

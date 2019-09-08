@@ -5,3 +5,6 @@ class Postprocessor:
 
     def getOutput(self):
         return None
+
+    def reset(self):
+        pass
