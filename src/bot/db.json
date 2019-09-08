@@ -1,0 +1,11 @@
+{
+    "350248176": {
+        "lastAskedBudgetCategory": null,
+        "currentState": "State",
+        "budgets": {
+            "frozen": 40.0,
+            "produce": 36.0,
+            "dairy": 55.0
+        }
+    }
+}

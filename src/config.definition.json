@@ -2,5 +2,8 @@
     "aws": {
         "key_id": "",
         "secret_access_key": ""
+    },
+    "telegram": {
+        "token": ""
     }
 }
